@@ -1,16 +1,31 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaEnvelope } from 'react-icons/fa';
+import Swal from 'sweetalert2';
 
 const ResetPasswordPage = () => {
   const [email, setEmail] = useState('');
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: false,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer);
+      toast.addEventListener('mouseleave', Swal.resumeTimer);
+    }
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      alert(`Une demande a été envoyée à l'administrateur pour réinitialiser le mot de passe pour ${email}.`);
-      setEmail('');
+        await Toast.fire({
+            icon: 'info',
+            title: `Une demande a été envoyée à l'administrateur pour réinitialiser le mot de passe pour ${email}.`
+          });
+       setEmail('');
     } catch (error) {
       console.error(error);
     }
@@ -37,6 +52,7 @@ const ResetPasswordPage = () => {
               placeholder="Email"
               value={email}
               onChange={handleEmailChange}
+              required
             />
             <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
               <FaEnvelope className="text-[#1f81a9]" />
