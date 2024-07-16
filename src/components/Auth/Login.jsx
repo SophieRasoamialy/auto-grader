@@ -1,24 +1,38 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { FaEnvelope, FaLock, FaEyeSlash, FaEye } from 'react-icons/fa';
-import axios from 'axios';
-import Cookies from 'js-cookie';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { FaEnvelope, FaLock, FaEyeSlash, FaEye } from "react-icons/fa";
+import axios from "axios";
+import Cookies from "js-cookie";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const schema = z.object({
+  email: z.string().email({ message: 'Invalid email format' }).min(1, { message: 'Email is required' }),
+  password: z.string().min(6, { message: 'Password must be at least 6 characters long' }),
+});
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(schema)
+  });
 
-  const handleSubmit = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:3001/api/auth/login', { email, password });
+      const response = await axios.post(
+        "http://localhost:3001/api/auth/login",
+        { email, password }
+      );
       const token = response.data.token;
 
-      Cookies.set('token', token, { expires: 1, path: '/' });
-      navigate('/');
+      Cookies.set("token", token, { expires: 1, path: "/" });
+      navigate("/");
     } catch (error) {
       console.error(error);
     }
@@ -41,20 +55,28 @@ const Login = () => {
       <div className="absolute inset-0 bg-cover bg-center z-0"></div>
 
       <div className="bg-white rounded-lg px-10 pt-8 pb-10 mb-4 relative z-10 shadow-lg w-full max-w-md leading-normal">
-        <img src="/images/logo.png" alt="Mi Tsara Logo" className="mx-auto w-48 mb-6" />
-        <form onSubmit={handleSubmit}>
+        <img
+          src="/images/logo.png"
+          alt="Mi Tsara Logo"
+          className="mx-auto w-48 mb-6"
+        />
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="relative mb-8">
             <input
               type="text"
               id="input-group-1"
               className="bg-white border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-[#1f81a9] focus:border-[#1f81a9] block w-full pl-10 p-2.5 scale-105 shadow-lg"
               placeholder="Email"
+              {...register("email")}
               value={email}
               onChange={handleEmailChange}
             />
             <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
               <FaEnvelope className="text-[#1f81a9]" />
             </div>
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+            )}
           </div>
 
           <div className="relative mb-2">
@@ -64,6 +86,7 @@ const Login = () => {
                 id="input-group-2"
                 className="bg-white border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-[#1f81a9] focus:border-[#1f81a9] block w-full pl-10 p-2.5 scale-105 shadow-lg"
                 placeholder="Password"
+                {...register("password")}
                 value={password}
                 onChange={handlePasswordChange}
               />
@@ -80,6 +103,9 @@ const Login = () => {
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
+            )}
           </div>
           <div className="relative">
             <Link
@@ -97,7 +123,6 @@ const Login = () => {
               Sign In
             </button>
           </div>
-          
         </form>
       </div>
     </div>
