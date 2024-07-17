@@ -81,7 +81,7 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
           <div className="bg-white p-4 rounded-lg shadow-md flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-gray-800">Copies scannées</h3>
+              <h3 className="text-lg font-semibold text-gray-800">Copies uploadées</h3>
               <p className="text-3xl font-bold text-gray-900">{quickStats.scannedCopies}</p>
             </div>
             <FaEnvelope className="text-4xl text-[#1f81a9]" />

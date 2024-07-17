@@ -41,11 +41,11 @@ const Sidebar = () => {
           </li>
           <li>
             <Link
-              to="/sujet"
+              to="/subject-list"
               className="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-700 hover:text-white"
             >
               <FaFileAlt className="mr-2" />
-              Examen
+              Sujet d'Examen
             </Link>
           </li>
           <li>
