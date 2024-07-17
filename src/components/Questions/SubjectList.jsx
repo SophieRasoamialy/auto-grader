@@ -39,7 +39,7 @@ const SubjectList = () => {
   return (
     <div className="flex">
       <Sidebar />
-      <div className="flex-1 p-8 bg-gray-100 min-h-screen pl-64">
+      <div className="flex-1 p-8 bg-[#f3fbfa] min-h-screen pl-64">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold text-gray-800">Liste des Sujets</h1>
           <select
@@ -121,7 +121,7 @@ const SubjectList = () => {
               Archives des Sujets d'Examens
             </h2>
             <Link
-              to="/archives"
+              to="/archived-subjects"
               className="text-white bg-gray-500 hover:bg-gray-600 focus:outline-none focus:ring-4  font-medium rounded-full text-sm px-5 py-2.5 text-center mb-2 "
             >
               Voir les Archives
