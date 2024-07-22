@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 
 const SubjectList = () => {
@@ -18,7 +18,7 @@ const SubjectList = () => {
   const [selectedLevel, setSelectedLevel] = useState("");
   const [filteredSubjects, setFilteredSubjects] = useState([]);
   const [selectedLevelName, setSelectedLevelName] = useState("");
-
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (selectedLevel) {
@@ -28,13 +28,19 @@ const SubjectList = () => {
           new Date(subject.examDate) >= new Date()
       );
       setFilteredSubjects(futureSubjects);
-      const level = levels.find(level => level.id === parseInt(selectedLevel));
+      const level = levels.find(
+        (level) => level.id === parseInt(selectedLevel)
+      );
       setSelectedLevelName(level ? level.name : "");
     } else {
       setFilteredSubjects([]);
       setSelectedLevelName("");
     }
   }, [selectedLevel]);
+
+  const handleNewExamClick = () => {
+    navigate("/create-exam"); // Redirigez vers la page de création d'examen
+  };
 
   return (
     <div className="flex">
@@ -60,10 +66,15 @@ const SubjectList = () => {
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
           <div className="p-4 flex justify-between items-center border-b border-gray-200">
             <h2 className="text-xl font-semibold text-gray-800">
-            {selectedLevelName ? `Sujets d'Examens Pour ${selectedLevelName}` : "Sujets d'Examens"}
+              {selectedLevelName
+                ? `Sujets d'Examens Pour ${selectedLevelName}`
+                : "Sujets d'Examens"}
             </h2>
             <div>
-              <button className="text-white bg-[#1f81a9] hover:bg-[#145c73] focus:outline-none focus:ring-4 focus:ring-[#1f81a9] font-medium rounded-full text-sm px-5 py-2.5 text-center mb-2 w-full">
+              <button
+                onClick={handleNewExamClick}
+                className="text-white bg-[#1f81a9] hover:bg-[#145c73] focus:outline-none focus:ring-4 focus:ring-[#1f81a9] font-medium rounded-full text-sm px-5 py-2.5 text-center mb-2 w-full"
+              >
                 Nouvel Examen
               </button>
             </div>
