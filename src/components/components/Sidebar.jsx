@@ -8,6 +8,8 @@ import {
   FaFileAlt,
   FaClipboardList,
   FaSignOutAlt,
+  FaPaperclip
+
 } from "react-icons/fa";
 import Cookies from "js-cookie";
 
@@ -55,6 +57,15 @@ const Sidebar = () => {
             >
               <FaUsers className="mr-2" />
               Étudiants
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/upload-copy"
+              className="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-700 hover:text-white"
+            >
+              <FaPaperclip className="mr-2" />
+              Feuille de copie
             </Link>
           </li>
           <li>

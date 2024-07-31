@@ -8,6 +8,7 @@ import SubjectList from "./components/Questions/SubjectList";
 import ArchivedSubjects from "./components/Questions/ArchivedSubjects";
 import SubjectDetails from "./components/Questions/SubjectDetails"; 
 import CreateExam from "./components/Questions/CreateExam";
+import UploadCopy from "./components/Answer/UploadCopy";
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
         <Route path="/archived-subjects" element={<ArchivedSubjects />} />
         <Route path="/sujet/:id" element={<SubjectDetails/>} /> 
         <Route path="/create-exam" element={<CreateExam />} />
+        <Route path="/upload-copy" element={<UploadCopy />} />
       </Routes>
     </Router>
   );
