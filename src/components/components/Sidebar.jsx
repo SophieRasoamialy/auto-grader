@@ -61,7 +61,7 @@ const Sidebar = () => {
           </li>
           <li>
             <Link
-              to="/upload-copy"
+              to="/list-copies"
               className="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-700 hover:text-white"
             >
               <FaPaperclip className="mr-2" />

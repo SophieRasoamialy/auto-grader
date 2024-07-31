@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import Sidebar from '../components/Sidebar';
+import React, { useState } from "react";
+import axios from "axios";
+import Sidebar from "../components/Sidebar";
 
 const UploadCopy = () => {
   const [files, setFiles] = useState([]);
-  const [result, setResult] = useState('');
-  const [session, setSession] = useState('');
-  const [classe, setClasse] = useState('');
-  const [matiere, setMatiere] = useState('');
+  const [result, setResult] = useState("");
+  const [session, setSession] = useState("");
+  const [classe, setClasse] = useState("");
+  const [matiere, setMatiere] = useState("");
   const [uploadCount, setUploadCount] = useState(0);
 
   const handleChange = (e) => {
@@ -18,29 +18,33 @@ const UploadCopy = () => {
     if (!files.length) return;
 
     const formData = new FormData();
-    files.forEach(file => formData.append('files', file));
+    files.forEach((file) => formData.append("files", file));
 
     try {
-      const response = await axios.post('http://localhost:3001/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      setResult(response.data.textLines.join('\n'));
+      const response = await axios.post(
+        "http://localhost:3001/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      setResult(response.data.textLines.join("\n"));
       setUploadCount(files.length);
     } catch (error) {
-      console.error('Error uploading file', error);
+      console.error("Error uploading file", error);
     }
   };
 
   const handleSave = () => {
-    console.log('Saving files with details:', { session, classe, matiere });
+    console.log("Saving files with details:", { session, classe, matiere });
     // Add logic to save the details and uploaded files to your backend.
   };
 
   return (
-    <div className='flex'>
-      <Sidebar/>
+    <div className="flex">
+      <Sidebar />
       <div className="flex items-center justify-center min-h-screen w-full bg-[#f3fbfa] pl-64">
         <div className="bg-white rounded-lg px-12 pt-10 pb-12 relative shadow-xl w-full max-w-6xl leading-normal">
           <h2 className="text-3xl font-semibold mb-8 text-gray-800 text-center">
@@ -48,11 +52,13 @@ const UploadCopy = () => {
           </h2>
 
           <div className="flex flex-col md:flex-row items-start justify-between space-y-8 md:space-y-0 md:space-x-8">
-            
             {/* Left Side: Form Selections */}
             <div className="w-full md:w-1/2">
               <div className="mb-6">
-                <label className="block text-gray-700 mb-3 text-lg" htmlFor="session">
+                <label
+                  className="block text-gray-700 mb-3 text-lg"
+                  htmlFor="session"
+                >
                   Sélectionnez la session de l'examen
                 </label>
                 <select
@@ -69,7 +75,10 @@ const UploadCopy = () => {
               </div>
 
               <div className="mb-6">
-                <label className="block text-gray-700 mb-3 text-lg" htmlFor="classe">
+                <label
+                  className="block text-gray-700 mb-3 text-lg"
+                  htmlFor="classe"
+                >
                   Sélectionnez la classe
                 </label>
                 <select
@@ -86,7 +95,10 @@ const UploadCopy = () => {
               </div>
 
               <div className="mb-6">
-                <label className="block text-gray-700 mb-3 text-lg" htmlFor="matiere">
+                <label
+                  className="block text-gray-700 mb-3 text-lg"
+                  htmlFor="matiere"
+                >
                   Sélectionnez la matière
                 </label>
                 <select
@@ -106,7 +118,9 @@ const UploadCopy = () => {
             {/* Right Side: File Upload */}
             <div className="w-full md:w-1/2">
               <div className="mb-6">
-                <label className="block text-gray-700 mb-3 text-lg">Uploader les copies scannées</label>
+                <label className="block text-gray-700 mb-3 text-lg">
+                  Uploader les copies scannées
+                </label>
                 <input
                   type="file"
                   multiple
@@ -130,7 +144,9 @@ const UploadCopy = () => {
 
               {result && (
                 <div className="mt-8 bg-gray-50 p-6 border rounded-lg shadow-lg">
-                  <h3 className="text-xl font-semibold text-gray-700 mb-4">Résultats :</h3>
+                  <h3 className="text-xl font-semibold text-gray-700 mb-4">
+                    Résultats :
+                  </h3>
                   <pre className="text-base text-gray-600">{result}</pre>
                 </div>
               )}
