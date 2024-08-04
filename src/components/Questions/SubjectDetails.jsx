@@ -7,7 +7,6 @@ import {
   FaEdit,
   FaEye,
   FaEyeSlash,
-  FaPrint,
   FaDownload,
 } from "react-icons/fa";
 import "./print.css";

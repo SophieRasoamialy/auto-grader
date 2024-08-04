@@ -10,6 +10,7 @@ import SubjectDetails from "./components/Questions/SubjectDetails";
 import CreateExam from "./components/Questions/CreateExam";
 import UploadCopy from "./components/Answer/UploadCopy";
 import ListCopy from "./components/Answer/listCopy";
+import ListNiveau from "./components/Niveau/listNiveau";
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
         <Route path="/create-exam" element={<CreateExam />} />
         <Route path="/upload-copy" element={<UploadCopy />} />
         <Route path="/list-copies" element={<ListCopy />} />
+        <Route path="/list-niveau" element={<ListNiveau />} />
       </Routes>
     </Router>
   );

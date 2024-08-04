@@ -88,7 +88,7 @@ const Sidebar = () => {
           </li>
           <li>
             <Link
-              to="/classe"
+              to="/list-niveau"
               className="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-700 hover:text-white"
             >
               <FaClipboardList className="mr-2" />
