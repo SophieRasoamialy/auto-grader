@@ -8,7 +8,8 @@ import {
   FaFileAlt,
   FaClipboardList,
   FaSignOutAlt,
-  FaPaperclip
+  FaPaperclip,
+  FaBookReader
 
 } from "react-icons/fa";
 import Cookies from "js-cookie";
@@ -75,6 +76,15 @@ const Sidebar = () => {
             >
               <FaUser className="mr-2" />
               Utilisateur
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/modules"
+              className="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-700 hover:text-white"
+            >
+              <FaBookReader className="mr-2" />
+              Module
             </Link>
           </li>
           <li>

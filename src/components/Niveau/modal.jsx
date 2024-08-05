@@ -16,9 +16,9 @@ function Modal({ isOpen, onClose, selectedClass, fetchClasses }) {
     event.preventDefault();
     try {
       if (selectedClass) {
-        await axios.put(`http://localhost:3001/api/classes/${selectedClass._id}`, { name });
+        await axios.put(`http://localhost:8000/api/classes/${selectedClass._id}`, { name });
       } else {
-        await axios.post("http://localhost:3001/api/classes", { name });
+        await axios.post("http://localhost:8000/api/classes", { name });
       }
       fetchClasses();
       onClose();
@@ -52,13 +52,13 @@ function Modal({ isOpen, onClose, selectedClass, fetchClasses }) {
             <button
               type="button"
               onClick={onClose}
-              className="text-white bg-gray-500 hover:bg-gray-600 focus:outline-none focus:ring-4  font-medium rounded-full text-sm px-5 py-2"
+              className="text-white bg-gray-500 hover:bg-gray-600 focus:outline-none focus:ring-4  font-medium rounded-full text-sm px-5 py-2.5"
             >
               Annuler
             </button>
             <button
               type="submit"
-              className="text-white bg-[#1f81a9] hover:bg-[#145c73] focus:outline-none focus:ring-4 focus:ring-[#1f81a9] font-medium rounded-full text-sm px-5 py-2"
+              className="text-white bg-[#1f81a9] hover:bg-[#145c73] focus:outline-none focus:ring-4 focus:ring-[#1f81a9] font-medium rounded-full text-sm px-5 py-2.5"
             >
               {selectedClass ? "Modifier" : "Ajouter"}
             </button>
