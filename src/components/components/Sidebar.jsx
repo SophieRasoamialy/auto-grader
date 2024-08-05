@@ -83,17 +83,8 @@ const Sidebar = () => {
               to="/modules"
               className="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-700 hover:text-white"
             >
-              <FaBookReader className="mr-2" />
-              Module
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/matiere"
-              className="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-700 hover:text-white"
-            >
               <FaBook className="mr-2" />
-              Matière
+              Unité d'enseignement
             </Link>
           </li>
           <li>
