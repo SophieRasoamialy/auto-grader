@@ -12,6 +12,7 @@ import UploadCopy from "./components/Answer/UploadCopy";
 import ListCopy from "./components/Answer/listCopy";
 import ListNiveau from "./components/Niveau/listNiveau";
 import Modules from "./components/UE/listModule";
+import UserList from "./components/User/listUser";
 
 const App = () => {
   return (
@@ -28,6 +29,7 @@ const App = () => {
         <Route path="/list-copies" element={<ListCopy />} />
         <Route path="/list-niveau" element={<ListNiveau />} />
         <Route path="/modules" element={<Modules />} />
+        <Route path="/list-user" element={<UserList />} />
       </Routes>
     </Router>
   );

@@ -71,7 +71,7 @@ const Sidebar = () => {
           </li>
           <li>
             <Link
-              to="/utilisateur"
+              to="/list-user"
               className="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-700 hover:text-white"
             >
               <FaUser className="mr-2" />
