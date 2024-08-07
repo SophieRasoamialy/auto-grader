@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
+import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import { Editor } from "@tinymce/tinymce-react";
@@ -23,15 +24,19 @@ const CreateExam = () => {
 
   // Fonction pour récupérer les matières
   const fetchSubjects = async () => {
+    const token = Cookies.get("token");
+    console.log("Token+++++++++++",token);
     try {
-      const token = localStorage.getItem("token"); // Supposons que le token JWT soit stocké dans le localStorage
+      const token = Cookies.get("token");
       const response = await axios.get("http://localhost:8000/matieres/me", {
         headers: {
           Authorization: `Bearer ${token}`, // Inclusion du token dans les en-têtes de la requête
         },
       });
       setSubjects(response.data);
+      console.log("Subject+++++++++++",response.data);
     } catch (error) {
+      console.log("Error+++++++++++",error);
       console.error("Erreur lors de la récupération des matières :", error);
     }
   };
