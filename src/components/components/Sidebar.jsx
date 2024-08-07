@@ -9,7 +9,6 @@ import {
   FaClipboardList,
   FaSignOutAlt,
   FaPaperclip,
-  FaBookReader
 
 } from "react-icons/fa";
 import Cookies from "js-cookie";

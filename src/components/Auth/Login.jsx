@@ -8,31 +8,58 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 const schema = z.object({
-  email: z.string().email({ message: 'Invalid email format' }).min(1, { message: 'Email is required' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters long' }),
+  email: z
+    .string()
+    .email({ message: "Invalid email format" })
+    .min(1, { message: "Email is required" }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters long" }),
 });
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { register, handleSubmit, formState: { errors } } = useForm({
-    resolver: zodResolver(schema)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
   });
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-
+  const onSubmit = async (data) => {
     try {
-      const response = await axios.post(
-        "http://localhost:3001/api/auth/login",
-        { email, password }
-      );
-      const token = response.data.token;
+      const response = await fetch("http://localhost:8000/api/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-      Cookies.set("token", token, { expires: 1, path: "/" });
-      navigate("/");
+      if (response.ok) {
+        const result = await response.json();
+        // Stocker le token dans les cookies avec SameSite et Secure pour éviter les avertissements du navigateur
+        Cookies.set("token", result.token, {
+          expires: 1,
+          sameSite: "None",
+          secure: true,
+        });
+        const storageToken = Cookies.get("token");
+        if (storageToken) {
+          console.log("Token found:------------", storageToken);
+        } else {
+          console.log("No token found----------");
+        }
+
+        // Rediriger l'utilisateur vers une autre page après la connexion
+        navigate("/");
+      } else {
+        const errorData = await response.json();
+        console.error(errorData.msg);
+        alert("Login failed: " + errorData.msg);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -40,14 +67,6 @@ const Login = () => {
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
-  };
-
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
-
-  const handleEmailChange = (event) => {
-    setEmail(event.target.value);
   };
 
   return (
@@ -68,33 +87,29 @@ const Login = () => {
               className="bg-white border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-[#1f81a9] focus:border-[#1f81a9] block w-full pl-10 p-2.5 scale-105 shadow-lg"
               placeholder="Email"
               {...register("email")}
-              value={email}
-              onChange={handleEmailChange}
             />
             <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
               <FaEnvelope className="text-[#1f81a9]" />
             </div>
             {errors.email && (
-              <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+              <p className="text-red-500 text-xs mt-1">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
           <div className="relative mb-2">
-            <div>
-              <input
-                type={showPassword ? "text" : "password"}
-                id="input-group-2"
-                className="bg-white border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-[#1f81a9] focus:border-[#1f81a9] block w-full pl-10 p-2.5 scale-105 shadow-lg"
-                placeholder="Password"
-                {...register("password")}
-                value={password}
-                onChange={handlePasswordChange}
-              />
-            </div>
+            <input
+              type={showPassword ? "text" : "password"}
+              id="input-group-2"
+              className="bg-white border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-[#1f81a9] focus:border-[#1f81a9] block w-full pl-10 p-2.5 scale-105 shadow-lg"
+              placeholder="Password"
+              {...register("password")}
+            />
             <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
               <FaLock className="text-[#1f81a9]" />
             </div>
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+            <div className="absolute inset-y-0 right-0 top-0 flex items-center pr-3">
               <button
                 type="button"
                 className="focus:outline-none text-gray-700"
@@ -104,7 +119,9 @@ const Login = () => {
               </button>
             </div>
             {errors.password && (
-              <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
+              <p className="text-red-500 text-xs mt-1">
+                {errors.password.message}
+              </p>
             )}
           </div>
           <div className="relative">

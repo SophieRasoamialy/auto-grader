@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
+import { Editor } from "@tinymce/tinymce-react";
 
 const CreateExam = () => {
   const [subject, setSubject] = useState("");
@@ -8,17 +10,57 @@ const CreateExam = () => {
   const [level, setLevel] = useState("");
   const [questions, setQuestions] = useState([
     {
-      question: "",
+      text: "",
       answer: "",
-      allowDuplicateAnswers: true,
+      answer_type: "texte",
+      points: "",
+      answer_duplicated: false,
     },
   ]);
+  const [subjects, setSubjects] = useState([]);
+  const [levels, setLevels] = useState([]);
   const navigate = useNavigate();
+
+  // Fonction pour récupérer les matières
+  const fetchSubjects = async () => {
+    try {
+      const token = localStorage.getItem("token"); // Supposons que le token JWT soit stocké dans le localStorage
+      const response = await axios.get("http://localhost:8000/matieres/me", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Inclusion du token dans les en-têtes de la requête
+        },
+      });
+      setSubjects(response.data);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des matières :", error);
+    }
+  };
+
+  // Fonction pour récupérer les niveaux
+  const fetchLevels = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/classes");
+      setLevels(response.data);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des niveaux :", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSubjects();
+    fetchLevels();
+  }, []);
 
   const handleAddQuestion = () => {
     setQuestions([
       ...questions,
-      { question: "", answer: "", allowDuplicateAnswers: true },
+      {
+        text: "",
+        answer: "",
+        answer_type: "texte",
+        points: "",
+        answer_duplicated: false,
+      },
     ]);
   };
 
@@ -34,12 +76,26 @@ const CreateExam = () => {
     setQuestions(newQuestions);
   };
 
-  const handleSubmit = (e) => {
+  const handleEditorChange = (index, field, content) => {
+    const newQuestions = [...questions];
+    newQuestions[index][field] = content;
+    setQuestions(newQuestions);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Vous pouvez ajouter la logique pour enregistrer l'examen ici
-    console.log({ subject, examDate, level, questions });
-    // Rediriger vers la liste des sujets après la création
-    navigate("/");
+    try {
+      const response = await axios.post("/api/exams", {
+        subject_id: subject,
+        date: examDate,
+        level,
+        questions,
+      });
+      console.log(response.data);
+      navigate("/");
+    } catch (error) {
+      console.error("Erreur lors de la création de l'examen :", error);
+    }
   };
 
   return (
@@ -54,19 +110,27 @@ const CreateExam = () => {
           className="bg-white shadow-md rounded-lg p-4"
         >
           <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="level"
-            >
-              Niveau
-            </label>
-            <input
-              id="level"
-              type="number"
-              value={level}
-              onChange={(e) => setLevel(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
+            <div className="mb-4">
+              <label
+                className="block text-gray-700 text-sm font-bold mb-2"
+                htmlFor="level"
+              >
+                Niveau
+              </label>
+              <select
+                id="level"
+                value={level}
+                onChange={(e) => setLevel(e.target.value)}
+                className="bg-white border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-[#1f81a9] focus:border-[#1f81a9] block w-full pl-10 p-2.5 shadow-lg"
+              >
+                <option value="">Sélectionnez un niveau</option>
+                {levels.map((lvl) => (
+                  <option key={lvl._id} value={lvl._id}>
+                    {lvl.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
           <div className="mb-4">
             <label
@@ -75,13 +139,19 @@ const CreateExam = () => {
             >
               Matière
             </label>
-            <input
+            <select
               id="subject"
-              type="text"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               className="bg-white border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-[#1f81a9] focus:border-[#1f81a9] block w-full pl-10 p-2.5 shadow-lg"
-              />
+            >
+              <option value="">Sélectionnez une matière</option>
+              {subjects.map((sub) => (
+                <option key={sub._id} value={sub._id}>
+                  {sub.name}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="mb-4">
             <label
@@ -95,7 +165,7 @@ const CreateExam = () => {
               type="date"
               value={examDate}
               onChange={(e) => setExamDate(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="bg-white border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-[#1f81a9] focus:border-[#1f81a9] block w-full pl-10 p-2.5 shadow-lg"
             />
           </div>
 
@@ -104,43 +174,99 @@ const CreateExam = () => {
               Questions
             </label>
             {questions.map((q, index) => (
-              <div key={index} className="mb-2">
-                <input
-                  type="text"
-                  placeholder={`Question ${index + 1}`}
-                  value={q.question}
-                  onChange={(e) =>
-                    handleChangeQuestion(index, "question", e.target.value)
+              <div key={index} className="mb-6">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Texte de la question
+                </label>
+                <Editor
+                  apiKey="vx9i16y2v638jfhhq9t242kvxkouxaxuo0wrvgxsg4786phi"
+                  init={{
+                    plugins:
+                      "anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage advtemplate ai mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss markdown",
+                    toolbar:
+                      "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat",
+                    tinycomments_mode: "embedded",
+                    ai_request: (request, respondWith) =>
+                      respondWith.string(() =>
+                        Promise.reject("See docs to implement AI Assistant")
+                      ),
+                  }}
+                  onEditorChange={(content) =>
+                    handleEditorChange(index, "text", content)
                   }
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
-                />
-                <textarea
-                  placeholder={`Réponse ${index + 1}`}
-                  value={q.answer}
-                  onChange={(e) =>
-                    handleChangeQuestion(index, "answer", e.target.value)
-                  }
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  rows="4"
                 />
 
-                <label className="block text-gray-700 text-sm font-bold mb-2 mt-2">
-                  Permettre les réponses dupliquées
+                <label className="block text-gray-700 text-sm font-bold mb-2 mt-4">
+                  Réponse
                 </label>
-                <select
-                  value={q.allowDuplicateAnswers}
-                  onChange={(e) =>
-                    handleChangeQuestion(
-                      index,
-                      "allowDuplicateAnswers",
-                      e.target.value === "true"
-                    )
+                <Editor
+                  apiKey="vx9i16y2v638jfhhq9t242kvxkouxaxuo0wrvgxsg4786phi"
+                  init={{
+                    plugins:
+                      "anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage advtemplate ai mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss markdown",
+                    toolbar:
+                      "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat",
+                    tinycomments_mode: "embedded",
+                    ai_request: (request, respondWith) =>
+                      respondWith.string(() =>
+                        Promise.reject("See docs to implement AI Assistant")
+                      ),
+                  }}
+                  onEditorChange={(content) =>
+                    handleEditorChange(index, "answer", content)
                   }
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                >
-                  <option value="true">Oui</option>
-                  <option value="false">Non</option>
-                </select>
+                />
+
+                <div className="mb-2">
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Type de réponse
+                  </label>
+                  <select
+                    value={q.answer_type}
+                    onChange={(e) =>
+                      handleChangeQuestion(index, "answer_type", e.target.value)
+                    }
+                    className="bg-white border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-[#1f81a9] focus:border-[#1f81a9] block w-full pl-10 p-2.5 shadow-lg"
+                  >
+                    <option value="texte">Texte</option>
+                    <option value="QCM">QCM</option>
+                    <option value="vrai ou faux">Vrai ou Faux</option>
+                    <option value="compléter">Compléter</option>
+                    <option value="conception">Conception</option>
+                  </select>
+                </div>
+                <div className="mb-2">
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Points
+                  </label>
+                  <input
+                    type="number"
+                    value={q.points}
+                    onChange={(e) =>
+                      handleChangeQuestion(index, "points", e.target.value)
+                    }
+                    className="bg-white border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-[#1f81a9] focus:border-[#1f81a9] block w-full pl-10 p-2.5 shadow-lg"
+                  />
+                </div>
+                <div className="mb-2">
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Permettre les réponses dupliquées
+                  </label>
+                  <select
+                    value={q.answer_duplicated}
+                    onChange={(e) =>
+                      handleChangeQuestion(
+                        index,
+                        "answer_duplicated",
+                        e.target.value === "true"
+                      )
+                    }
+                    className="bg-white border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-[#1f81a9] focus:border-[#1f81a9] block w-full pl-10 p-2.5 shadow-lg"
+                  >
+                    <option value="true">Oui</option>
+                    <option value="false">Non</option>
+                  </select>
+                </div>
                 <button
                   type="button"
                   onClick={() => handleRemoveQuestion(index)}
@@ -159,7 +285,6 @@ const CreateExam = () => {
             </button>
           </div>
 
-          {/* Container for the submit button */}
           <div className="flex justify-end">
             <button
               type="submit"
